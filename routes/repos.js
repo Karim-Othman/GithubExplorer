@@ -1,6 +1,7 @@
 const express = require ('express');
 const router = express.Router();
 var ECodeHandler = require ('../util/eCodeHandler');
+const GitHubHandler = require('../thirdParties/gitHubHandler');
 
 //Request validation bad request.. No username was sent
 router.get('/',(req, res) => {  
@@ -9,9 +10,11 @@ router.get('/',(req, res) => {
 });
 
 
-router.get('/:userName',(req, res) => {
+router.get('/:userName',async (req, res) => {
+
+    const Repos = await GitHubHandler.getRepos(req.params.userName);
     const eCode= ECodeHandler('Success');
-    res.status(eCode.status).send(eCode);
+    res.status(eCode.status).send(Repos);
     
 });
 
