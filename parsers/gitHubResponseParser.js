@@ -9,3 +9,12 @@ const reposData = gitHubPayload.reduce((nonFokredRepos, repo) => {
 },[]);
 return reposData;
 };
+
+exports.extractRepoBranchesAndEnrichData = (gitHubPayload, IndexedReposArr) => {
+    // this workaround done as we may fail in one request out of all.. so repo name will be extracted from response
+
+    const parsedBranchesArr = gitHubPayload.reduce((IndexedReposArr,branchObj)=>{
+
+    });
+
+};
