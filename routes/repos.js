@@ -12,9 +12,10 @@ router.get('/',(req, res) => {
 
 router.get('/:userName',async (req, res) => {
 
-    const Repos = await GitHubHandler.getRepos(req.params.userName);
+    const authorization = req.headers.authorization;
+    const finalResponse = await GitHubHandler.getRepos(req.params.userName,authorization);
     const eCode= ECodeHandler('Success');
-    res.status(eCode.status).send(Repos);
+    res.status(eCode.status).send(finalResponse);
     
 });
 
