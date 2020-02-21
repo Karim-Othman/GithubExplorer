@@ -1,16 +1,13 @@
 const eCodeGlobal ={
 
     badRequest:{status:400, Message:"bad request: missing manadatory param"},
-    resourceNotFound:{status:404, Message:"Not found: The resource you trying to access isn't found"},
-    notAcceptableRes:{status:406, Message:"Not acceptable response: used application/json in header"},
-    Success:{status:200, Message:"Success"}
+    '404':{status:404, Message:"Not found: The resource you trying to access isn't found"},
+    notAcceptableReq:{status:406, Message:"Not acceptable request: use Accept:application/json in header"},
+    Success:{status:200, Message:"Success"},
+    Unknown:{status:500, Message:"Unknown error"}
 
 };
 
-   function eCodeHandler (usecase){
-        return eCodeGlobal[usecase];
-    }
-
-
-
-module.exports = eCodeHandler;
+exports.eCodeHandler = (backendEcode)=>{
+        return eCodeGlobal[backendEcode];
+    };

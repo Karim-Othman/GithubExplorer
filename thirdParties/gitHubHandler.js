@@ -13,7 +13,7 @@ exports.getRepos = (userName, Authorization) =>{
   .then((response)=>{
     return enrichResponseWithBranchData(GitHubParser.extractReposData(response.data),userName, Authorization);
     })
-  .catch (error => console.log(error));
+  .catch (error =>{return error.response.status;});
   
   
 };
@@ -37,6 +37,10 @@ async function enrichResponseWithBranchData (reposArr,userName, Authorization){
       //console.log("IndexedReposArr is", JSON.stringify(finalParsedArray));
       return finalParsedArray;
     }))
-    .catch (error => console.log(error));
+    .catch (error => console.log(error.response.status,error.response.statusText));
+
+}
+
+exports.githubGraphqlIntegration =(userName)=>{
 
 }
