@@ -10,6 +10,32 @@ const eCodeGlobal ={
 
 };
 
-exports.eCodeHandler = (backendEcode)=>{
+exports.eCodeMapper = (backendEcode)=>{
         return eCodeGlobal[backendEcode];
     };
+
+exports.eCodeHandler = (finalResponse)=>{
+    let resObj ={};
+    if(finalResponse){
+        if (finalResponse=="401" || finalResponse=="403"|| finalResponse=="404"){
+        const eCode = eCodeGlobal[finalResponse];
+        resObj.status = eCode.status;
+        resObj.res=eCode;
+        }
+        else if (Array.isArray(finalResponse)){
+        const eCode= eCodeGlobal['Success'];
+        resObj.status = eCode.status;
+        resObj.res=finalResponse;}
+        else{
+            const eCode= eCodeGlobal['Unknown'];
+            resObj.status = eCode.status;
+            resObj.res=eCode;
+        }}
+
+    else{
+        const eCode= eCodeGlobal['Unknown'];
+        resObj.status = eCode.status;
+        resObj.res=eCode;
+    }
+    return resObj;
+};
