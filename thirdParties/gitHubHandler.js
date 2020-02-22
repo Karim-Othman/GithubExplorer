@@ -46,7 +46,13 @@ exports.githubGraphqlIntegration =(userName,Authorization)=>{
   const Header = Authorization ? {headers: {Authorization}}:{headers:{}}; // if token sent to increase limit; forward it
 
   const graphqlClient = new graphql.GraphQLClient(URI,Header);
-  graphqlClient.request(postBody)
-  .then(data => GitHubParser.graphQLparser(data))
-  .catch(error=>console.log(JSON.stringify(error)));
+  return graphqlClient.request(postBody)
+  .then(data => {return GitHubParser.graphQLparser(data)})
+  .catch((error)=>{
+    if (error.response.status=="401") return "401";
+    else if(error.response.errors){
+       if (error.response.errors[0].type == "NOT_FOUND") return "404";
+    }
+    else console.log(error);
+  });
 };

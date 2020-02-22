@@ -55,7 +55,7 @@ exports.graphQLparser =(response)=>{
                 finalArr.push(tempObj);
         });
     }
-    console.log(JSON.stringify(finalArr));
+    return finalArr;
 };
 
 function getBranches(nonParsedBranches){

@@ -9,12 +9,7 @@ router.get('/',(req, res) => {
         res.status(eCode.status).send(eCode);
 });
 
-router.get('/graphql/:userName',async(req, res) => {
-    const authorization = req.headers.authorization;
-    GitHubHandler.githubGraphqlIntegration(req.params.userName,authorization);
-    const eCode= ECodeHandler.eCodeHandler('Success');
-    res.status(eCode.status).send(eCode);
-});
+
 
 router.get('/:userName',async (req, res) => {
 
@@ -25,19 +20,60 @@ router.get('/:userName',async (req, res) => {
     else{
         const authorization = req.headers.authorization;
         const finalResponse = await GitHubHandler.getRepos(req.params.userName,authorization);
-        if (finalResponse=="404"){
-            const eCode = ECodeHandler.eCodeHandler(finalResponse);
-            res.status(eCode.status).send(eCode);
-        }
-        else if (finalResponse.length>0){
-        const eCode= ECodeHandler.eCodeHandler('Success');
-        res.status(eCode.status).send(finalResponse);}
+        if(finalResponse){
+            if (finalResponse=="404"){
+                const eCode = ECodeHandler.eCodeHandler(finalResponse);
+                res.status(eCode.status).send(eCode);
+                }
+                else if (finalResponse=="401"){
+                    const eCode = ECodeHandler.eCodeHandler(finalResponse);
+                    res.status(eCode.status).send(eCode);
+                }
+                else if (finalResponse=="403"){
+                    const eCode = ECodeHandler.eCodeHandler(finalResponse);
+                    res.status(eCode.status).send(eCode);
+                }
+                else if (finalResponse.length>0){
+                const eCode= ECodeHandler.eCodeHandler('Success');
+                res.status(eCode.status).send(finalResponse);}}
 
         else{
             const eCode= ECodeHandler.eCodeHandler('Unknown');
             res.status(eCode.status).send(eCode);
         }}
     
+});
+
+router.get('/graphql/:userName',async(req, res) => {
+    if (req.headers.accept!='application/json'){
+        const eCode = ECodeHandler.eCodeHandler('notAcceptableReq');
+        res.status(eCode.status).send(eCode);
+    }
+    else{
+        const authorization = req.headers.authorization;
+        const finalResponse= await GitHubHandler.githubGraphqlIntegration(req.params.userName,authorization);
+        
+        if(finalResponse){
+            if (finalResponse=="404"){
+            const eCode = ECodeHandler.eCodeHandler(finalResponse);
+            res.status(eCode.status).send(eCode);
+            }
+            else if (finalResponse=="401"){
+                const eCode = ECodeHandler.eCodeHandler(finalResponse);
+                res.status(eCode.status).send(eCode);
+            }
+            else if (finalResponse=="403"){
+                const eCode = ECodeHandler.eCodeHandler(finalResponse);
+                res.status(eCode.status).send(eCode);
+            }
+            else if (finalResponse.length>0){
+            const eCode= ECodeHandler.eCodeHandler('Success');
+            res.status(eCode.status).send(finalResponse);}}
+
+        else{
+            const eCode= ECodeHandler.eCodeHandler('Unknown');
+            res.status(eCode.status).send(eCode);
+        }}
 });
 
 module.exports = router;
