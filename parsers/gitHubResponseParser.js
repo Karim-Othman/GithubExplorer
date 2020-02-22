@@ -42,3 +42,31 @@ function getRepoNameFromBranchResponse (branchURL,userName) {
     return arrMatches[0];
 
 }
+
+exports.graphQLparser =(response)=>{
+
+    const reposArr = response.user.repositories.nodes;
+    var finalArr=[];
+    if (reposArr.length>0){
+        reposArr.map(repo=>{
+            var tempObj = {repoName:repo.name,
+                ownerLogin:repo.owner.login};
+            tempObj.branches= getBranches(repo.refs.nodes);
+                finalArr.push(tempObj);
+        });
+    }
+    console.log(JSON.stringify(finalArr));
+};
+
+function getBranches(nonParsedBranches){
+
+    var ParsedBranches = [];
+    if (nonParsedBranches.length>0){
+        nonParsedBranches.map(branch=>{
+            var tempObj = {branchName:branch.name,
+                lastCommitSha:branch.target.oid};
+                ParsedBranches.push(tempObj);
+        });}
+
+        return ParsedBranches;
+}

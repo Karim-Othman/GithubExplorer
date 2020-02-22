@@ -9,8 +9,10 @@ router.get('/',(req, res) => {
         res.status(eCode.status).send(eCode);
 });
 
-router.post('/graphql/:userName',async(req, res) => {  
-    const eCode= ECodeHandler.eCodeHandler('badRequest');
+router.get('/graphql/:userName',async(req, res) => {
+    const authorization = req.headers.authorization;
+    GitHubHandler.githubGraphqlIntegration(req.params.userName,authorization);
+    const eCode= ECodeHandler.eCodeHandler('Success');
     res.status(eCode.status).send(eCode);
 });
 

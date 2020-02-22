@@ -14,7 +14,7 @@ exports.postBodyGetter = function (usecase, userName){
     GetNonForkedReposAndRelativeBranches:`query GetNonForkedReposAndRelativeBranches {
     __typename
     user(login: "${userName}") {
-      repositories(isFork: false, first: 100) {
+      repositories(isFork: false, affiliations: OWNER, first: 100, ownerAffiliations: OWNER) {
         nodes {
           name
           owner {

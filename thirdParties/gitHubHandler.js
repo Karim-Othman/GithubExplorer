@@ -1,9 +1,7 @@
 const axios = require("axios");
 var APIsUtil= require('./APIs');
 const GitHubParser = require('../parsers/gitHubResponseParser');
-
-
-//console.log(APIsUtil.postBodyGetter('GetNonForkedReposAndRelativeBranches','Karim-othman'));
+const graphql = require ("graphql-request");
 
 exports.getRepos = (userName, Authorization) =>{
 
@@ -41,6 +39,14 @@ async function enrichResponseWithBranchData (reposArr,userName, Authorization){
 
 }
 
-exports.githubGraphqlIntegration =(userName)=>{
+exports.githubGraphqlIntegration =(userName,Authorization)=>{
 
-}
+  const URI=APIsUtil.URIgetter('gitHubGraphQL',userName).URI;
+  var postBody= APIsUtil.postBodyGetter('GetNonForkedReposAndRelativeBranches',userName);
+  const Header = Authorization ? {headers: {Authorization}}:{headers:{}}; // if token sent to increase limit; forward it
+
+  const graphqlClient = new graphql.GraphQLClient(URI,Header);
+  graphqlClient.request(postBody)
+  .then(data => GitHubParser.graphQLparser(data))
+  .catch(error=>console.log(JSON.stringify(error)));
+};
