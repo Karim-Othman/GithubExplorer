@@ -1,0 +1,223 @@
+openapi: 3.0.0
+info:
+  title: GithubExplorer API
+  description: This API should list all non-forked gitHub repos of a given userName. Implmentation is based on gitHub API V3 and V4 as a backing API. It contains two GET endpoints on of them is based on REST integration with github API V3 and the other endpoint is based on GraphQL integration with github API V4. Both endpoints have the same response signature but the GrapghQL on is way faster than the other (~0.5 elapsed time).
+  contact:
+    email: "karimmohamedothman@gmail.com"
+  version: 1.0.0
+paths:
+  /githubRepo/{userName}:
+    get:
+      parameters: 
+        - $ref: "#/components/parameters/AcceptParam"
+        - in: header
+          name: Authorization
+          description: Non-required header parameter to be sent by the consumer in order to maximize transactions limit. default limit is 60 transaction per hour. Consumer should mention "token " before token string.
+          required: false
+          schema:
+            example: token f521580kacd6d235987da6e06077136cb1444
+            type: string
+        - $ref: "#/components/parameters/userNameParam"
+
+            
+      responses:
+        200:
+          $ref: "#/components/responses/successResponse"
+        400:
+          $ref: "#/components/responses/badRequest"        
+        401:
+          $ref: "#/components/responses/badCredentials"
+        403:
+          $ref: "#/components/responses/forbidden"            
+        404:
+          $ref: "#/components/responses/resourceNotFound"
+        406:
+          $ref: "#/components/responses/JsonAppMissing"  
+        500:
+          $ref: "#/components/responses/internalServererror"  
+          
+  /githubRepo/graphql/{userName}:
+    get:
+      parameters: 
+        - $ref: "#/components/parameters/AcceptParam"
+        - in: header
+          name: Authorization
+          description: Required header parameter to be sent by the consumer. Consumer should mention "bearer " before token string.
+          required: true
+          schema:
+            example: bearer f521580kacd6d235987da6e06077136cb1444
+            type: string
+        - $ref: "#/components/parameters/userNameParam"
+            
+      responses:
+        200:
+          $ref: "#/components/responses/successResponse"
+        400:
+          $ref: "#/components/responses/badRequest"        
+        401:
+          $ref: "#/components/responses/badCredentials"
+        403:
+          $ref: "#/components/responses/forbidden"            
+        404:
+          $ref: "#/components/responses/resourceNotFound"
+        406:
+          $ref: "#/components/responses/JsonAppMissing"  
+        500:
+          $ref: "#/components/responses/internalServererror"  
+          
+          
+components:
+  parameters:
+    userNameParam:
+      in: path
+      name: userName
+      description: This represnts userName that we want to inquire his own Repos
+      required: true
+      schema:
+        type: string 
+        example: Karim-Othman
+      
+    AcceptParam:
+      in: header
+      name: Accept
+      description: Required header parameter to be sent with "application/json" value
+      required: true
+      schema:
+        example: application/json
+        type: string
+  
+  schemas:
+    repoSchema:
+      type: object
+      properties:
+              repoName:
+                type: string
+                example: admire
+              ownerLogin:
+                type: string
+                example: Karim-Othman
+              branches:
+                type: array
+                items:
+                  $ref: "#/components/schemas/branchSchema"
+    branchSchema:
+      type: object
+      properties:
+              branchName:
+                type: string
+                example: master
+              lastCommitSha:
+                type: string
+                example: 0e744a9daedd5203e4e8a36bc9947f41bee8911e
+                
+    badRequestSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [400]
+        Message: 
+          type: string
+          enum: ["bad request: missing manadatory param"]  
+          
+    badCredentialsSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [401]
+        Message: 
+          type: string
+          enum: ["Bad credentials"]  
+          
+    forbiddenSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [403]
+        Message: 
+          type: string
+          enum: ["Forbidden: max limit exceeded"]            
+
+    resourceNotFoundSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [404]
+        Message: 
+          type: string
+          enum: ["Not found: The resource you trying to access isn't found"]            
+    JsonAppMissingSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [406]
+        Message: 
+          type: string
+          enum: ["Not acceptable request: use Accept:application/json in header"]  
+
+    internalServererrorSchema:
+      type: object
+      properties:
+        status: 
+          type: integer
+          enum: [500]
+        Message: 
+          type: string
+          enum: ["Unknown error"]   
+          
+  responses:
+    successResponse:
+      description: Returns user's non-forked github repositories
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/repoSchema"
+              
+    badRequest:
+      description: "bad request: missing manadatory param"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/badRequestSchema"             
+            
+    badCredentials:
+      description: Authorization field in header either wrong or missing when mandatory
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/badCredentialsSchema"
+    
+    forbidden:
+      description: "Forbidden: max limit exceeded"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/forbiddenSchema" 
+            
+    resourceNotFound:
+      description: "Not found: The resource you trying to access isn't found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/resourceNotFoundSchema"    
+            
+            
+    JsonAppMissing:
+      description: "Not acceptable request: use Accept:application/json in header"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/JsonAppMissingSchema"
+            
+    internalServererror:
+      description: "internal server error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/internalServererrorSchema" 
